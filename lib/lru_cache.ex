@@ -3,7 +3,7 @@ defmodule LruCache do
   defstruct size: 0, capacity: 0, store: HashDict.new()
 
   def new(capacity) when is_integer(capacity) do
-    %LruCache{ capacity: capacity }
+    %LruCache { capacity: capacity }
   end
 
   def new(%LruCache{} = cache) do
@@ -14,10 +14,15 @@ defmodule LruCache do
     store = HashDict.put(store, key, value)
     size = HashDict.size(store)
 
-    %LruCache{
+    %LruCache {
       size: size,
       capacity: capacity,
       store: store
     }
   end
+
+  def read(%LruCache{ } = cache, key) do
+    {cache , cache.store |> HashDict.get key}
+  end
+
 end

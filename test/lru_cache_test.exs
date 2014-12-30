@@ -17,4 +17,17 @@ defmodule LruCacheTest do
     expectedStore = HashDict.new |> HashDict.put :key, :value
     assert %LruCache{size: 1, capacity: 1, store: expectedStore } == cache
   end
+
+  test "should access value by key" do
+    {cache, value} = LruCache.new(1) 
+      |> LruCache.cache(:key, :value)
+      |> LruCache.read(:key)
+
+    assert value == :value
+  end
+ 
+  # test "when capacity is hit, insert will replace least recently used key" do
+
+  # end
+
 end
