@@ -10,7 +10,12 @@ defmodule LruCache do
     cache
   end
 
-  def cache(%LruCache{ store: store, lru: lru } = cache, key, value) do
+  def cache(%LruCache{ size: size, capacity: capacity, store: store, lru: lru } = cache, key, value) do
+    if size == capacity do
+      [lru_key|lru] = lru
+      store = HashDict.drop store, [lru_key]
+    end
+
     store = HashDict.put(store, key, value)
     size = HashDict.size(store)
     Map.merge cache, %{size: size, store: store, lru: key_used(lru, key)}
@@ -24,7 +29,8 @@ defmodule LruCache do
 
   def key_used(lru, key) do
     if key in lru, do:
-      lru = (for x <- lru, x !== key, do: x)
+      lru = for x <- lru, x !== key, do: x
     lru ++ [key]
   end
+
 end

@@ -27,17 +27,32 @@ defmodule LruCacheTest do
   end
  
   test "when capacity is reached, insert will replace least recently used key" do
-    cache = LruCache.new(2) 
+    %LruCache{store: store} = LruCache.new(2) 
       |> LruCache.cache(:k1, :v1)
       |> LruCache.cache(:k2, :v2)
+      |> LruCache.cache(:k3, :v3)
 
-    {cache, value} = LruCache.read cache, :k1
+    refute HashDict.has_key?(store, :k1)
+    assert HashDict.has_key?(store, :k2)
+    assert HashDict.has_key?(store, :k3)
+  end
 
-    cache = LruCache.cache(cache, :k3, :v3)
+  test "when read performed least recently used key updated" do
+    {%LruCache{store: store, lru: lru}, _} = LruCache.new(2) 
+      |> LruCache.cache(:k1, :v1)
+      |> LruCache.cache(:k2, :v2)
+      |> LruCache.read(:k1)
 
-    refute cache.store |> HashDict.has_key? :k2
-    assert cache.store |> HashDict.has_key? :k1
-    assert cache.store |> HashDict.has_key? :k3
+    assert lru == [:k2, :k1]
+  end
+
+  test "when cache update performed least recently used key updated" do
+    %LruCache{store: store, lru: lru}= LruCache.new(2) 
+      |> LruCache.cache(:k1, :v1)
+      |> LruCache.cache(:k2, :v2)
+      |> LruCache.cache(:k1, :vX)
+
+    assert lru == [:k2, :k1]
   end
 
 end
