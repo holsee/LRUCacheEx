@@ -12,4 +12,9 @@ defmodule LruCacheTest do
     assert 10 == cache.capacity
   end
 
+  test "insert items to cache" do
+    cache = LruCache.new(1) |> LruCache.cache(:key, :value)
+    expectedStore = HashDict.new |> HashDict.put :key, :value
+    assert %LruCache{size: 1, capacity: 1, store: expectedStore } == cache
+  end
 end
